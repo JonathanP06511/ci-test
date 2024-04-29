@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Echo the message
-        run: |
+        run: 
           echo "Hola mundo 1!"
+          echo "Hola jonathan33!"
           echo "Hola jonathan33!"
       - name: Dime la fecha
         run: date
-      - run: ls -l
+      - run: ls -ld
