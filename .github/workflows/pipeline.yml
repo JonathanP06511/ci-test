@@ -99,31 +99,14 @@ jobs:
     needs: [test, e2e]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2 
         with:
           fetch-depth: 0
-      - name: Railway Deploy
-
-      on:
-        push:
-          branches:
-            - main  # Puedes ajustar esta rama según tu configuración
-      
-      jobs:
-        deploy:
-          runs-on: ubuntu-latest
-          steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-      
-            - name: Install Railway CLI
-              run: |
-                curl -sSL https://railway.app/cli | sh
-                railway install
-      
-            - name: Railway Deploy
-              env:
-                RAILWAY_PROJECT_NAME: ${{ secrets.RAILWAY_PROJECT_NAME }}
-                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-              run: |
-                railway deploy --name $RAILWAY_PROJECT_NAME --token $RAILWAY_TOKEN
+      - name: Deploy to Railway
+        if: ${{ github.event_name == 'push' }}
+        uses: bervProject/railway-deploy@main
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        with:
+          service: "my-service"
