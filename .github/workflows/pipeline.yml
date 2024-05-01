@@ -102,12 +102,28 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Deploy to Heroku
-        if: ${{ github.event_name == 'push' }}
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.HEROKU_APP}}
-          heroku_email: ${{secrets.HEROKU_API_EMAIL}}
-          healthcheck: "https://${{secrets.HEROKU_APP}}.herokuapp.com/health"
-          rollbackonhealthcheckfailed: true
+      - name: Railway Deploy
+
+      on:
+        push:
+          branches:
+            - main  # Puedes ajustar esta rama según tu configuración
+      
+      jobs:
+        deploy:
+          runs-on: ubuntu-latest
+          steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+      
+            - name: Install Railway CLI
+              run: |
+                curl -sSL https://railway.app/cli | sh
+                railway install
+      
+            - name: Railway Deploy
+              env:
+                RAILWAY_PROJECT_NAME: ${{ secrets.RAILWAY_PROJECT_NAME }}
+                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+              run: |
+                railway deploy --name $RAILWAY_PROJECT_NAME --token $RAILWAY_TOKEN
